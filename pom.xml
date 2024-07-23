@@ -3,4 +3,15 @@
   <groupId>Jenkins2</groupId>
   <artifactId>Jenkins2</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  <dependencies>
+  
+  <dependency>
+	    <groupId>org.testng</groupId>
+	    <artifactId>testng</artifactId>
+	    <version>7.10.2</version>
+	    
+	</dependency>
+  
+  </dependencies>
+  
 </project>
