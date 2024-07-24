@@ -1,30 +1,81 @@
 pipeline {
   agent any
-  stages {
-    stage('Checkout') {
-      steps {
-        git(url: 'https://github.com/Kaleem9300/ForJenkins.git', branch: 'main')
-      }
+  tools {
+        // Define Maven tool
+        maven 'MAVAN_HOME'
     }
 
-    stage('Build') {
-      steps {
-        sh 'mvn clean compile'
-      }
+    environment {
+        // Define environment variables if needed
+        MAVEN_OPTS = '-Xmx2g'
     }
 
-    stage('Test') {
-      steps {
-        sh '''mvn test
-'''
-      }
+    stages {
+        stage('Checkout') {
+            steps {
+                // Checkout the code from Git
+                git url: 'https://github.com/Kaleem9300/ForJenkins.git', branch: 'main'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                // Run Maven clean and compile
+                script {
+                    def mvnHome = tool 'MAVAN_HOME'
+                    bat "\"${mvnHome}\\bin\\mvn\" clean compile"
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                // Run Maven tests using TestNG
+                script {
+                    def mvnHome = tool 'MAVAN_HOME'
+                    bat "\"${mvnHome}\\bin\\mvn\" test"
+                }
+            }
+            post {
+                always {
+                    // Archive TestNG test results
+                    junit '**/target/surefire-reports/*.xml'  // Adjust path as necessary
+                }
+            }
+        }
+
+        stage('Package') {
+            steps {
+                // Package the application
+                script {
+                    def mvnHome = tool 'MAVAN_HOME'
+                    bat "\"${mvnHome}\\bin\\mvn\" package"
+                }
+            }
+        }
+
+        stage('Archive') {
+            steps {
+                // Archive build artifacts
+                archiveArtifacts artifacts: '**/target/*.jar', allowEmptyArchive: true
+            }
+        }
     }
 
-    stage('Post') {
-      steps {
-        junit(testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: true)
-      }
+    post {
+        always {
+            // Perform actions regardless of build status
+            echo 'Cleaning workspace...'
+            cleanWs()
+        }
+        success {
+            echo 'Build succeeded!'
+        }
+        failure {
+            echo 'Build failed.'
+        }
+        unstable {
+            echo 'Build is unstable.'
+        }
     }
-
-  }
 }
