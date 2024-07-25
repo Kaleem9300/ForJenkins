@@ -1,8 +1,15 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
-<suite name="Test Suite" parallel="methods" thread-count="5">
-    <test name="SampleTest">
+<suite name="SampleTestSuite">
+
+    <test name="SampleTestCase">
         <classes>
-            <class name="com.jobs.SampleTest"/>
+            <class name="com.jobs.SampleTest">
+                <methods>
+                    <include name="f"/>
+                    <include name="f1"/>
+                </methods>
+            </class>
         </classes>
     </test>
+
 </suite>
